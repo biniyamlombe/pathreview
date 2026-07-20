@@ -13,6 +13,9 @@ The unit tests for `ReviewService` mock the database session incorrectly for asy
 
 **Branch name:** `fix/158-review-service-async-mocks`
 
+**Selection notes:**
+I chose this Tier 1 issue because it matches my current comfort level: fixing Python unit-test mocks, not changing production review logic or the frontend. Scope is small and clear — one test file, a known failure mode (`13 failed / 6 passed`), and a concrete repro command. That makes it a good first contribution while I learn the PathReview codebase.
+
 **Setup confirmation:** [ ] App runs locally at localhost:5173
 
 **Cohort ledger:** [x] Issue added to cohort ledger
