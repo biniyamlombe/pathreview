@@ -22,14 +22,14 @@ I chose this Tier 1 issue because it matches my current comfort level: fixing Py
 
 ## Week 8 — Reproduction & solution planning
 
-**Reproduction commit link:** [TODO: paste commit URL after you push the reproduction docs]
+**Reproduction commit link:** https://github.com/biniyamlombe/pathreview/commit/86f3e79
 
 **Reproduction summary:**
 I reproduced the bug by running `pytest tests/unit/test_review_service.py -q` in my local venv. I observed **13 failed, 6 passed**, with `AttributeError: 'coroutine' object has no attribute 'first'` on `get_review` tests and `'all'` on `list_reviews` tests — the test mocks use `AsyncMock` for the SQLAlchemy result object, so `result.scalars()` returns a coroutine while the service correctly calls `.first()` / `.all()` synchronously.
 
-**PLAN.md link:** [TODO: paste link after PLAN.md is pushed, e.g. https://github.com/biniyamlombe/pathreview/blob/fix/158-review-service-async-mocks/PLAN.md]
+**PLAN.md link:** https://github.com/biniyamlombe/pathreview/blob/fix/158-review-service-async-mocks/PLAN.md
 
-**Walkthrough video (recommended):** [optional — Loom link ≤2 min, or leave blank]
+**Walkthrough video (recommended):**
 
 **Blockers or open questions:**
 None so far. Main remaining work for Week 9 is reworking the mocks in `tests/unit/test_review_service.py` (`AsyncMock` for `execute`, sync `Mock`/`MagicMock` for the result) without changing `core/services/review_service.py`.
