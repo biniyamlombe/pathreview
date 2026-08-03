@@ -51,7 +51,7 @@ None.
 
 ### Check-in 2 (end of week)
 
-**PR link:** [pending — will update after opening the PR]
+**PR link:** https://github.com/ascherj/pathreview/pull/620
 
 **Branch:** `fix/158-review-service-async-mocks`
 
