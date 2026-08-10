@@ -66,3 +66,34 @@ Fixed misconfigured async mocks in `review_service` unit tests. `AsyncMock` was 
 *(Pre-existing repo failures unrelated to #158: `make check` reports many ruff issues outside our files; `make test-unit` had ~39 failed + 31 errors in other modules such as semantic/structural chunkers, skill_extractor, tech_detector, etc. Our changes introduce no new failures — `test_review_service.py` is 19/19 green and ruff is clean on the touched files.)*
 
 **Draft PR feedback received from:** none
+
+## Week 10 — Iteration & reflection
+
+### Reviewer feedback
+
+**Feedback received:** [ ] Yes  [x] No — still awaiting review
+
+**Summary of feedback:**
+No comments from reviewers or maintainers on [PR #620](https://github.com/ascherj/pathreview/pull/620) by the end of Week 10. Per the Su26 note, formal PR reviewer feedback is not a required course feature this term, so I checked the PR, documented that nothing arrived, and moved on to reflection.
+
+**How you responded:**
+
+
+---
+
+### Reflection
+
+**What was harder than you expected?**
+Debugging the mock failure itself was straightforward once I compared one failing test to `get_review`, but the “last mile” around the fix was harder than I expected. After swapping `AsyncMock` → `Mock` on results, I briefly over-fixed the session fixture (`commit`/`refresh` as sync `Mock`), which broke `create_review` with `'Mock' object can't be awaited`. Then `test_list_reviews_ordered_by_created_at` failed because it asserted `execute` was called once while `list_reviews` always calls it twice. Getting from “I understand the bug” to “all 19 green without new warnings” took more careful reading of the service than I assumed for a Tier 1 issue. Pre-commit mypy also blocked the commit by following imports into `review_service.py`, which forced a decision I did not plan for in Week 8.
+
+**What did you learn about working in a large codebase?**
+In my own projects I usually change whatever makes the tools happy. Here the issue was explicitly test-only, so the right contribution was a small, reviewable diff that mirrors existing async SQLAlchemy usage — not a broad cleanup. I also learned that “green for my file” and “green for `make test-unit` / `make check`” are different: the repo already had unrelated failures, and the course expectation was not to fix everything, but to avoid making things worse and to document that clearly in the PR. Branch naming, Conventional Commits, the PR template, and keeping a journal on the working branch (not `main`) are part of the contribution, not extras.
+
+**How did AI tools help — and where did they fall short?**
+AI was useful for navigating PathReview quickly: locating `test_review_service.py` / `review_service.py`, explaining why `AsyncMock` turns `.scalars()` into a coroutine, and drafting PLAN/PR/journal language. It fell short when I needed judgment about scope. For example, adding `db: Any` unblocked mypy, but later course feedback correctly pointed out that weakens type safety and expands a test-only PR into production. AI also could not replace running one failing test with `-vv`, reading the traceback to the service line, and verifying the mock against real async SQLAlchemy call patterns myself.
+
+**What would you do differently if you started over?**
+I would keep production code completely untouched for a test-only issue and handle mypy in the test layer (ignore/override) instead of broadening types with `Any`. I would also open the draft PR earlier in the week, fix one failing test first as a pattern, then apply it across the file, and run the focused pytest command before broader `make` targets so I do not confuse pre-existing suite failures with my change. Finally, I would treat `list_reviews`’s double `execute` as a planned edge case from day one, since PLAN.md already called that risk out.
+
+**What are you most proud of from this module?**
+I’m most proud of the debugging habit of treating the service code as the source of truth and the tests as the broken contract — reproducing 13 failed / 6 passed, writing PLAN.md before editing, and iterating until the focused suite was 19/19 with a clear PR explanation a reviewer could verify with one pytest command. That process feels more transferable than the specific mock one-liner.
